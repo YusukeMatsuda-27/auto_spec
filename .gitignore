@@ -9,6 +9,7 @@ wheels/
 # Virtual environments
 .venv
 
-*.env
 *.md
+*.env
 *.xml
+!README.md
