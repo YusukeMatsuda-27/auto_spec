@@ -3,7 +3,7 @@ import re
 
 from llama_index.core import Document, Settings
 from llama_index.embeddings.gemini import GeminiEmbedding
-from llama_index.llms.gemini import Gemini
+from llama_index.llms.google_genai import GoogleGenAI
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -58,7 +58,7 @@ class Llama_index_make_sentence:
 
 class MakeSpecLLM:
     def __init__(self, llm_key):
-        self.client = Gemini(
+        self.client = GoogleGenAI(
             model_name="gemini-2.5-flash",
             api_key=llm_key,
         )
