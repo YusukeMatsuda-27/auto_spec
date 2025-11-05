@@ -1,9 +1,9 @@
 import logging
 import re
 
-from langchain_google_genai import ChatGoogleGenerativeAI
 from llama_index.core import Document, Settings
-from llama_index.embeddings.google import GeminiEmbedding
+from llama_index.embeddings.gemini import GeminiEmbedding
+from llama_index.llms.gemini import Gemini
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -58,9 +58,9 @@ class Llama_index_make_sentence:
 
 class MakeSpecLLM:
     def __init__(self, llm_key):
-        self.client = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",  # ここは利用するモデルに合わせる
-            google_api_key=llm_key,
+        self.client = Gemini(
+            model_name="gemini-2.5-flash",
+            api_key=llm_key,
         )
         self.section_context = []
 
@@ -71,13 +71,13 @@ class MakeSpecLLM:
             logging.info(f"{section} の処理を開始します")
             section_prompt = f"""
             以下はプロジェクトの {section} に関する情報です。
-            これを解析して仕様書の章としてまとめてください。
+            これを解析してプロジェクトに必要と考えられるテストの仕様書を作成してください。
             fileセクションはプロジェクトに含まれている全てのファイルなので、プロジェクトとは関係のないファイルの場合は**関係なし**とだけ出力してください
 
             {doc.text}
             """
-            response = self.client.invoke(section_prompt)
-            self.section_context.append(response.content)
+            response = self.client.complete(section_prompt)
+            self.section_context.append(response.message.content)
 
     def run(self):
         try:
@@ -91,7 +91,7 @@ class MakeSpecLLM:
 
             {joined_sections}
             """
-            response = self.client.invoke(final_prompt)
+            response = self.client.complete(final_prompt)
             return response.content
         except Exception as e:
             logger.exception("エラー発生: %s", e)
